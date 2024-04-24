@@ -4,9 +4,7 @@ import { calUrlPattern } from "./create.schema";
 import type { TRPCContext } from "../../trpc";
 import type { TCreateSchema } from "./create.schema";
 import validateCalUsername from "@/lib/validateCalUsername";
-import { eventNames } from "process";
 import axios from "axios";
-import { env } from "@/env";
 
 type CreateOptions = {
   ctx: {
@@ -18,13 +16,16 @@ type CreateOptions = {
 interface SuccessResponse {
   result: {
     data: {
-      json: Record<string, unknown> | null;
+      json: {
+        id: number;
+        title: string;
+        slug: string;
+        owner: {
+          id: number;
+        };
+      } | null;
     };
   };
-}
-
-interface NotFoundResponse {
-  message: string;
 }
 
 const eventTypeExists = async (
@@ -34,12 +35,15 @@ const eventTypeExists = async (
   //const currentDate = new Date().toString();
   //const apiUrl = `https://api.cal.com/v1/slots?apiKey=${apiKey}&startTime=${currentDate}&endTime=${currentDate}&eventTypeSlug=${eventTypeSlug}&usernameList=[${username}]`;
 
-  const apiUrl = `https://cal.com/api/trpc/public/event,event?batch=1&input={"0":{"json":{"username":"${username}","eventSlug":"${eventTypeSlug}","isTeamEvent":null,"org":"i","fromRedirectOfNonOrgLink":true},"meta":{"values":{"isTeamEvent":["undefined"]}}},"1":{"json":{"username":"${username}","eventSlug":"${eventTypeSlug}","isTeamEvent":false,"org":"i"}}}`;
+  //const apiUrl = `https://cal.com/api/trpc/public/event,event?batch=1&input={"0":{"json":{"username":"${username}","eventSlug":"${eventTypeSlug}","isTeamEvent":null,"org":"i","fromRedirectOfNonOrgLink":true},"meta":{"values":{"isTeamEvent":["undefined"]}}},"1":{"json":{"username":"${username}","eventSlug":"${eventTypeSlug}","isTeamEvent":false,"org":"i"}}}`;
+  const apiUrl = `https://cal.com/api/trpc/public/event?batch=1&input={"0":{"json":{"username":"${username}","eventSlug":"${eventTypeSlug}","isTeamEvent":false,"org":null}}}`;
 
   try {
     const response = await axios.get<SuccessResponse[]>(apiUrl);
 
     if (!response) return undefined;
+
+    console.log(response.data[0]);
 
     if (!response.data) return undefined;
 
@@ -62,13 +66,7 @@ const eventTypeExists = async (
 // (cal.com/username)
 export const createHandler = async ({ ctx, input }: CreateOptions) => {
   const { user } = ctx.session;
-  const { identifier, name, checkInFrequency, tags } = input;
-
-  const tagsWithUserId = tags.map((tag) => ({
-    userId: user.id,
-    name: tag.name,
-    color: tag.color,
-  }));
+  const { identifier, name, checkInFrequency, tag } = input;
 
   // if the identifier is a url, we can extract the username from the url
   // TODO: if not we assume it's an username and construct the url from it
@@ -103,11 +101,17 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
     });
   }
 
-  console.log(eventExists[0]?.result.data.json);
+  if (!eventExists[0]?.result.data.json) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "The event type doesn't exist on cal.com",
+    });
+  }
 
-  const contactAlreadyExists = await db.user.findFirst({
+  const contactAlreadyExists = await db.contacts.findFirst({
     where: {
       username,
+      userId: user.id,
     },
     select: {
       id: true,
@@ -120,9 +124,14 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
       message: "The contact already exists",
     });
 
+  if (username === user.username) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "You can't add yourself as a contact",
+    });
+  }
+
   const calUsernameExists = await validateCalUsername(username);
-  console.error(username);
-  console.log(calUsernameExists);
 
   if (calUsernameExists?.available) {
     throw new TRPCError({
@@ -134,15 +143,19 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
   const newContact = await db.contacts.create({
     data: {
       userId: user.id,
-      url: identifier,
+      url: `cal.com/${username}`,
       name,
       username,
       checkInFrequency,
-      tags: {
-        createMany: {
-          data: tagsWithUserId,
+      tag,
+      eventType: {
+        create: {
+          calId: eventExists[0].result.data.json.id,
+          title: eventExists[0].result.data.json.title,
+          slug: eventExists[0].result.data.json.slug,
         },
       },
+      calId: eventExists[0].result.data.json.owner.id,
     },
   });
 

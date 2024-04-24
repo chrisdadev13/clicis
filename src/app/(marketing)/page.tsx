@@ -14,7 +14,8 @@ export default function Marketing() {
             Effortless Check-Ins, Meaningful Connections
           </h1>
           <p className="pb-9 text-2xl">
-            Never Miss a Beat with Your People. Check In with Ease using Your Cal.com Account!
+            Never Miss a Beat with Your People. Check In with Ease using Your
+            Cal.com Account!
           </p>
           <div className="flex gap-6">
             <Button
@@ -31,7 +32,7 @@ export default function Marketing() {
           </div>
           <small>
             *You&apos;ll need a <span className="font-cal">Cal.com</span>{" "}
-            account to use this app properly
+            account to use this tool properly
           </small>
         </div>
         <div className="mx-auto flex max-w-2xl sm:mt-24 md:mt-16 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none">
@@ -43,7 +44,11 @@ export default function Marketing() {
           />
         </div>
       </section>
-      <section className="flex items-center justify-center w-full"><p className="font-cal font-black text-xl">Perfect if you use and like Cal.com</p></section>
+      <section className="flex w-full items-center justify-center">
+        <p className="font-cal text-xl font-black">
+          Perfect if you use and like Cal.com
+        </p>
+      </section>
       <section
         id="cta"
         className="mx-3 mt-20 rounded-xl border border-white bg-primary p-5 text-center text-gray-200"

@@ -43,21 +43,8 @@ import { z } from "zod";
 const formSchema = z.object({
   identifier: CalUrlSchema.optional(),
   name: z.string().min(1).max(100).optional(),
-  tags: z.string(),
+  tag: z.string(),
 });
-
-enum Color {
-  Red = "red",
-  Blue = "blue",
-  Green = "green",
-  Yellow = "yellow",
-  Purple = "purple",
-  Orange = "orange",
-  Pink = "pink",
-  Brown = "brown",
-  Black = "black",
-  White = "white",
-}
 
 export default function UpdateContact({
   id,
@@ -79,7 +66,7 @@ export default function UpdateContact({
     defaultValues: {
       identifier: identifier,
       name: name,
-      tags: tag,
+      tag: tag,
     },
   });
 
@@ -101,8 +88,9 @@ export default function UpdateContact({
   function onSubmit(values: z.infer<typeof formSchema>) {
     mutate({
       id: id,
+      name: values.name,
       identifier: values.identifier === "" ? null : values.identifier,
-      tags: [{ name: values.tags, color: Color.Red }],
+      tag: values.tag,
     });
   }
 
@@ -142,13 +130,14 @@ export default function UpdateContact({
               <FormField
                 control={form.control}
                 name="identifier"
+                disabled
                 render={({ field }) => (
                   <FormItem className="mt-3 flex w-full flex-col">
                     <FormLabel
                       htmlFor="name"
                       className="mr-2 text-left font-cal text-xs"
                     >
-                      Cal.com url
+                      Cal.com url (WIP)
                     </FormLabel>
                     <Input
                       className="w-full"
@@ -162,7 +151,7 @@ export default function UpdateContact({
               />
               <FormField
                 control={form.control}
-                name="tags"
+                name="tag"
                 render={({ field }) => (
                   <FormItem className="mt-3 flex flex-col">
                     <FormLabel className="mr-2 font-cal text-xs">

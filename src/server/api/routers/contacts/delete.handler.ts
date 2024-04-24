@@ -28,8 +28,8 @@ export const deleteHandler = async ({ ctx, input }: DeleteOptions) => {
     });
   }
 
-  await Promise.all([
-    db.tags.deleteMany({
+  await Promise.allSettled([
+    db.eventTypes.deleteMany({
       where: {
         contactId: id,
       },

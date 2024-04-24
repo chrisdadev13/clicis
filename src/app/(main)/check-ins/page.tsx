@@ -1,7 +1,6 @@
 import { CalendarIcon } from "@radix-ui/react-icons";
 import { redirect } from "next/navigation";
 import { getServerAuthSession } from "@/server/auth";
-import { api } from "@/trpc/server";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -17,7 +16,7 @@ export default async function CheckIns() {
   }
 
   return (
-    <div className="mt-64 flex w-screen flex-col items-center justify-center">
+    <div className="mt-64 flex  flex-col items-center justify-center">
       <div className="flex flex-col items-center justify-center">
         <CalendarIcon className="h-12 w-12" />
         <h1 className="my-2 max-w-md text-center font-cal text-2xl">

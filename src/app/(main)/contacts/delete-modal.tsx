@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 
 import { api } from "@/trpc/react";
-import { TrashIcon } from "@radix-ui/react-icons";
+import { ReloadIcon, TrashIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -30,7 +30,7 @@ export default function DeleteModal({
 
   const { contacts } = api.useUtils();
 
-  const { mutate } = api.contacts.delete.useMutation({
+  const { mutate, isPending } = api.contacts.delete.useMutation({
     onSuccess: async () => {
       await contacts.list.invalidate();
       router.refresh();
@@ -83,7 +83,11 @@ export default function DeleteModal({
             onClick={() => {
               mutate({ id });
             }}
+            disabled={isPending}
           >
+            {isPending ? (
+              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
             Delete
           </Button>
           <Button variant="ghost">Cancel</Button>

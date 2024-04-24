@@ -46,19 +46,6 @@ const formSchema = z.object({
   tags: z.string(),
 });
 
-enum Color {
-  Red = "red",
-  Blue = "blue",
-  Green = "green",
-  Yellow = "yellow",
-  Purple = "purple",
-  Orange = "orange",
-  Pink = "pink",
-  Brown = "brown",
-  Black = "black",
-  White = "white",
-}
-
 export function CreateContact() {
   const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(false);
@@ -94,7 +81,7 @@ export function CreateContact() {
     mutate({
       identifier: values.identifier,
       name: values.name,
-      tags: [{ name: values.tags, color: Color.Blue }],
+      tag: values.tags,
       checkInFrequency: values.checkInFrequency,
     });
   }
@@ -151,7 +138,7 @@ export function CreateContact() {
                           Cal.com url <FormMessage className="ml-1" />
                         </FormLabel>
                         <Input
-                          placeholder="https://cal.com/rick"
+                          placeholder="https://cal.com/rick/get-rick-rolled"
                           className="col-span-3 mr-2"
                           value={field.value.toLowerCase().trim()}
                           onChange={field.onChange}

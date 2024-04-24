@@ -45,10 +45,10 @@ model User {
   timeZone      String?    @default("")
   weekStart     String?    @default("")
   accounts      Account[]
-  Contacts      Contacts[]
+  contacts      Contacts[]
   sessions      Session[]
-  Tags          Tags[]
   checkins      CheckIns[]
+
 }
 
 model VerificationToken {
@@ -59,42 +59,53 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Tags {
-  id        String   @id @default(cuid())
-  contactId String
-  name      String
-  color     Color
-  userId    String
-  contact   Contacts @relation(fields: [contactId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
-}
+//model Tags {
+//  id        String   @id @default(cuid())
+//  contactId String
+//  name      String
+//  color     Color
+//  userId    String
+//  contact   Contacts @relation(fields: [contactId], references: [id])
+//  user      User     @relation(fields: [userId], references: [id])
+//}
 
 model Contacts {
-  id               String      @id @default(cuid())
+  id               String       @id @default(cuid())
+  calId            Int?         @default(0)
   url              String
   username         String
   name             String
   checkInFrequency CheckInTime
-  createdAt        DateTime    @default(now())
+  createdAt        DateTime     @default(now())
   userId           String
-  active           Boolean     @default(true)
-  user             User        @relation(fields: [userId], references: [id])
-  tags             Tags[]
+  tag              String
+  active           Boolean      @default(true)
+  user             User         @relation(fields: [userId], references: [id])
   checkins         CheckIns[]
+  eventType        EventTypes[]
+}
+
+model EventTypes {
+  id        String   @id @default(cuid())
+  calId     Int?     @default(0)
+  title     String
+  slug      String
+  contactId String
+  contact   Contacts @relation(fields: [contactId], references: [id])
 }
 
 model CheckIns {
-  id        String   @id @default(cuid())
-  contactId String
-  contact   Contacts @relation(fields: [contactId], references: [id])
-  userId    String
-  startDate DateTime
-  endDate   DateTime
-  timeZone  String
-  title     String
+  id          String   @id @default(cuid())
+  contactId   String
+  contact     Contacts @relation(fields: [contactId], references: [id])
+  userId      String
+  startDate   DateTime
+  endDate     DateTime
+  timeZone    String
+  title       String
   description String?
-  status    String
-  createdAt DateTime @default(now())
+  status      String
+  createdAt   DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
 }

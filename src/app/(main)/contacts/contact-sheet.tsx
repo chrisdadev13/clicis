@@ -9,11 +9,12 @@ import {
   SheetHeader,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { addDays, format } from "date-fns";
+import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { type DateRange } from "react-day-picker";
-
+import { api } from "@/trpc/react";
 import { cn } from "@/lib/utils";
+
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -34,11 +35,20 @@ export default function ContactSheet({
     id: string;
     username: string;
     name: string;
-    tags: { name: string }[];
+    tag: string;
     checkInFrequency: string;
   };
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [showEventTypes, setShowEventTypes] = React.useState(false);
+  const { data } = api.contacts.getEvents.useQuery({
+    contactId: contact.id,
+  });
+
+  const checkAvailabilityAndBook = async (date: Date) => {
+    console.log(date);
+  };
+
   return (
     <Sheet onOpenChange={setIsOpen} open={isOpen}>
       <SheetTrigger asChild>
@@ -60,7 +70,7 @@ export default function ContactSheet({
 
               <AvatarFallback>{contact.username[0]}</AvatarFallback>
             </Avatar>
-            <Badge variant="secondary">{contact.tags.at(-1)!.name}</Badge>
+            <Badge variant="secondary">{contact.tag}</Badge>
           </div>
           <div className="ml-2">
             <div className="flex flex-col items-start">
@@ -82,9 +92,9 @@ export default function ContactSheet({
           <p>
             👋 Hey! Meet your buddy <strong>{contact.username}</strong>.
             He&apos;s a{" "}
-            {contact.tags.at(-1)!.name === "Friends"
+            {contact.tag === "Friends"
               ? "friend"
-              : contact.tags.at(-1)!.name === "Family"
+              : contact.tag === "Family"
                 ? "relative"
                 : "coworker"}{" "}
             of yours and he&apos;s often around. You two may have a common free
@@ -92,20 +102,96 @@ export default function ContactSheet({
           </p>
         </SheetDescription>
         <Separator className="my-3" />
-        <div className="mt-48 flex w-full items-center justify-center">
-          <div className="flex flex-col items-center justify-center">
-            <CalendarIcon className="h-6 w-6" />
-            <h1 className="my-2 max-w-md text-center font-cal text-xl">
-              This is pretty empty...
-            </h1>
+        {showEventTypes ? (
+          <div>
+            <Button
+              variant="link"
+              onClick={() => setShowEventTypes(false)}
+              size="sm"
+            >
+              Go Back
+            </Button>
+            <div className="mt-36 flex w-full items-center justify-center">
+              <div className="flex flex-col items-center justify-center">
+                <h1 className="mb-2 font-cal text-xl">
+                  Available events to check in
+                </h1>
+                <p className="mb-3 text-center">
+                  Click one of the options and we are going to do all the job
+                  for you 🙂
+                </p>
+                <ul className="w-full">
+                  {data?.map((event) => (
+                    <li
+                      key={event.id}
+                      className="flex w-full flex-col items-center justify-between"
+                    >
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="w-full ">
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {event.title}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          align="start"
+                          className="flex w-[22rem] flex-col space-y-2 p-2"
+                        >
+                          <Button
+                            onClick={() => checkAvailabilityAndBook(new Date())}
+                            variant="ghost"
+                            value="0"
+                          >
+                            Today
+                          </Button>
+                          <Button variant="ghost" value="1">
+                            Tomorrow
+                          </Button>
+                          <Button variant="ghost" value="3">
+                            In 3 days
+                          </Button>
+                          <Button variant="ghost" value="7">
+                            In a week
+                          </Button>
 
-            <h3 className="mb-3 max-w-[19rem] text-center text-sm text-gray-500">
-              How come you haven&apos;t booked with this person in a long time?
-              🤨... Let&apos;s annoy! 🚀
-            </h3>
-            <Button size="sm">Check in</Button>
+                          <Button variant="ghost" value="7">
+                            In a month
+                          </Button>
+                        </PopoverContent>
+                      </Popover>
+                      <Link
+                        target="_blank"
+                        href={`https://cal.com/${contact.username}/${event.slug}`}
+                        className="w-full text-left text-xs text-gray-500"
+                      >
+                        <small>
+                          cal.com/{contact.username}/{event.slug}
+                        </small>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="mt-48 flex w-full items-center justify-center">
+            <div className="flex flex-col items-center justify-center">
+              <CalendarIcon className="h-6 w-6" />
+              <h1 className="my-2 max-w-md text-center font-cal text-xl">
+                This is pretty empty...
+              </h1>
+
+              <h3 className="mb-3 max-w-[19rem] text-center text-sm text-gray-500">
+                How come you haven&apos;t booked with this person in a long
+                time? 🤨... Let&apos;s annoy! 🚀
+              </h3>
+              <Button size="sm" onClick={() => setShowEventTypes(true)}>
+                Check in
+              </Button>
+            </div>
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );
