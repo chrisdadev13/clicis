@@ -18,6 +18,7 @@ export const getEventsHandler = async ({ input }: GetEventsOptions) => {
     },
     select: {
       id: true,
+      calId: true,
       title: true,
       slug: true,
       contact: true,

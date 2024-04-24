@@ -28,30 +28,47 @@ interface SuccessResponse {
   };
 }
 
+interface SuccessResponseNew {
+  pageProps: {
+    users: [
+      {
+        name: string;
+        username: string;
+        bio: string;
+      },
+    ];
+    eventTypes: [
+      {
+        id: number;
+        title: string;
+        slug: string;
+        length: string;
+      },
+    ];
+  };
+}
+
 const eventTypeExists = async (
   username: string,
-  eventTypeSlug: string,
-): Promise<SuccessResponse[] | undefined> => {
+  //eventTypeSlug: string,
+): Promise<SuccessResponseNew | { notFound: true } | undefined> => {
   //const currentDate = new Date().toString();
   //const apiUrl = `https://api.cal.com/v1/slots?apiKey=${apiKey}&startTime=${currentDate}&endTime=${currentDate}&eventTypeSlug=${eventTypeSlug}&usernameList=[${username}]`;
 
   //const apiUrl = `https://cal.com/api/trpc/public/event,event?batch=1&input={"0":{"json":{"username":"${username}","eventSlug":"${eventTypeSlug}","isTeamEvent":null,"org":"i","fromRedirectOfNonOrgLink":true},"meta":{"values":{"isTeamEvent":["undefined"]}}},"1":{"json":{"username":"${username}","eventSlug":"${eventTypeSlug}","isTeamEvent":false,"org":"i"}}}`;
-  const apiUrl = `https://cal.com/api/trpc/public/event?batch=1&input={"0":{"json":{"username":"${username}","eventSlug":"${eventTypeSlug}","isTeamEvent":false,"org":null}}}`;
+  //const apiUrl = `https://cal.com/api/trpc/public/event?batch=1&input={"0":{"json":{"username":"${username}","eventSlug":"${eventTypeSlug}","isTeamEvent":false,"org":null}}}`;
+
+  const apiUrl = `https://cal.com/_next/data/rvL6o_8tKUuD8OWntAbyy/en/org/cal/${username}.json?user=${username}&orgSlug=cal`;
 
   try {
-    const response = await axios.get<SuccessResponse[]>(apiUrl);
+    //const response = await axios.get<SuccessResponse[]>(apiUrl);
+    const response = await axios.get<SuccessResponseNew | { notFound: true }>(
+      apiUrl,
+    );
 
     if (!response) return undefined;
 
-    console.log(response.data[0]);
-
     if (!response.data) return undefined;
-
-    if (!response.data[0]) return undefined;
-
-    if (!response.data[0].result.data.json) return undefined;
-
-    if (response.data[0].result.data.json === null) return undefined;
 
     return response.data;
   } catch (error) {
@@ -92,16 +109,16 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
     });
   }
 
-  const eventExists = await eventTypeExists(username, eventTypeSlug);
+  const contactCalPage = await eventTypeExists(username);
 
-  if (!eventExists) {
+  if (!contactCalPage) {
     throw new TRPCError({
       code: "BAD_REQUEST",
       message: "The event type doesn't exist on cal.com",
     });
   }
 
-  if (!eventExists[0]?.result.data.json) {
+  if ((contactCalPage as { notFound: boolean }).notFound) {
     throw new TRPCError({
       code: "BAD_REQUEST",
       message: "The event type doesn't exist on cal.com",
@@ -140,6 +157,14 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
     });
   }
 
+  const eventsToCreate = (
+    contactCalPage as SuccessResponseNew
+  ).pageProps.eventTypes.map((event) => ({
+    title: event.title,
+    slug: event.slug,
+    length: event.length,
+  }));
+
   const newContact = await db.contacts.create({
     data: {
       userId: user.id,
@@ -149,13 +174,9 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
       checkInFrequency,
       tag,
       eventType: {
-        create: {
-          calId: eventExists[0].result.data.json.id,
-          title: eventExists[0].result.data.json.title,
-          slug: eventExists[0].result.data.json.slug,
-        },
+        createMany: eventsToCreate,
       },
-      calId: eventExists[0].result.data.json.owner.id,
+      calId: contactCalPage[0].result.data.json.owner.id,
     },
   });
 

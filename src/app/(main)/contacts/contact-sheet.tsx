@@ -9,13 +9,8 @@ import {
   SheetHeader,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
-import { type DateRange } from "react-day-picker";
 import { api } from "@/trpc/react";
-import { cn } from "@/lib/utils";
-
-import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
@@ -26,8 +21,17 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { MagnifyingGlassIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { Separator } from "@/components/ui/separator";
+
+enum MeetTime {
+  Today,
+  Tomorrow,
+  In3Days,
+  InAWeek,
+  InAMonth,
+  Random,
+}
 export default function ContactSheet({
   contact,
 }: {
@@ -40,13 +44,64 @@ export default function ContactSheet({
   };
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpenPopover, setIsOpenPopover] = React.useState(false);
   const [showEventTypes, setShowEventTypes] = React.useState(false);
+  const { mutate, isPending } = api.cal.checkAvailabilityAndSave.useMutation();
+
   const { data } = api.contacts.getEvents.useQuery({
     contactId: contact.id,
   });
 
-  const checkAvailabilityAndBook = async (date: Date) => {
-    console.log(date);
+  const checkAvailabilityAndBook = async (
+    meetTime: MeetTime,
+    eventId: number,
+  ) => {
+    const startDate = new Date();
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date();
+    endDate.setHours(23, 59, 59, 999);
+
+    if (meetTime === MeetTime.Today) {
+      mutate({
+        startTime: startDate.toISOString(),
+        endTime: endDate.toISOString(),
+        eventId,
+      });
+    } else if (meetTime === MeetTime.Tomorrow) {
+      startDate.setDate(startDate.getDate() + 1);
+      endDate.setDate(startDate.getDate() + 2);
+      mutate({
+        startTime: startDate.toISOString(),
+        endTime: endDate.toISOString(),
+        eventId,
+      });
+    } else if (meetTime === MeetTime.In3Days) {
+      startDate.setDate(startDate.getDate() + 3);
+      endDate.setDate(startDate.getDate() + 6);
+      mutate({
+        startTime: startDate.toISOString(),
+        endTime: endDate.toISOString(),
+        eventId,
+      });
+    } else if (meetTime === MeetTime.InAWeek) {
+      startDate.setDate(startDate.getDate() + 7);
+      endDate.setDate(startDate.getDate() + 14);
+      mutate({
+        startTime: startDate.toISOString(),
+        endTime: endDate.toISOString(),
+        eventId,
+      });
+    } else if (meetTime === MeetTime.InAMonth) {
+      startDate.setDate(startDate.getDate() + 30);
+      endDate.setDate(startDate.getDate() + 60);
+      mutate({
+        startTime: startDate.toISOString(),
+        endTime: endDate.toISOString(),
+        eventId,
+      });
+    }
+
+    setIsOpenPopover(false);
   };
 
   return (
@@ -89,17 +144,15 @@ export default function ContactSheet({
         </SheetHeader>
         <Separator className="my-3" />
         <SheetDescription>
-          <p>
-            👋 Hey! Meet your buddy <strong>{contact.username}</strong>.
-            He&apos;s a{" "}
-            {contact.tag === "Friends"
-              ? "friend"
-              : contact.tag === "Family"
-                ? "relative"
-                : "coworker"}{" "}
-            of yours and he&apos;s often around. You two may have a common free
-            time to chat... Wanna check if he&apos;s available? 📆{" "}
-          </p>
+          👋 Hey! Meet your buddy <strong>{contact.username}</strong>. He&apos;s
+          a{" "}
+          {contact.tag === "Friends"
+            ? "friend"
+            : contact.tag === "Family"
+              ? "relative"
+              : "coworker"}{" "}
+          of yours and he&apos;s often around. You two may have a common free
+          time to chat... Wanna check if he&apos;s available? 📆{" "}
         </SheetDescription>
         <Separator className="my-3" />
         {showEventTypes ? (
@@ -107,9 +160,11 @@ export default function ContactSheet({
             <Button
               variant="link"
               onClick={() => setShowEventTypes(false)}
+              disabled={isPending}
               size="sm"
             >
-              Go Back
+              {isPending && <ReloadIcon className="mr-2 animate-spin" />}
+              {isPending ? "Booking 😁..." : "Go Back"}
             </Button>
             <div className="mt-36 flex w-full items-center justify-center">
               <div className="flex flex-col items-center justify-center">
@@ -126,11 +181,24 @@ export default function ContactSheet({
                       key={event.id}
                       className="flex w-full flex-col items-center justify-between"
                     >
-                      <Popover>
+                      <Popover
+                        open={isOpenPopover}
+                        onOpenChange={setIsOpenPopover}
+                      >
                         <PopoverTrigger asChild>
-                          <Button variant="outline" className="w-full ">
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {event.title}
+                          <Button
+                            disabled={isPending}
+                            variant="outline"
+                            className="w-full "
+                          >
+                            {isPending && (
+                              <ReloadIcon className="mr-2 animate-spin" />
+                            )}
+
+                            {!isPending && (
+                              <CalendarIcon className="mr-2 h-4 w-4" />
+                            )}
+                            {!isPending ? event.title : "Booking 🙂..."}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent
@@ -138,23 +206,64 @@ export default function ContactSheet({
                           className="flex w-[22rem] flex-col space-y-2 p-2"
                         >
                           <Button
-                            onClick={() => checkAvailabilityAndBook(new Date())}
+                            onClick={() =>
+                              checkAvailabilityAndBook(
+                                MeetTime.Today,
+                                event.calId!,
+                              )
+                            }
                             variant="ghost"
                             value="0"
                           >
                             Today
                           </Button>
-                          <Button variant="ghost" value="1">
+                          <Button
+                            variant="ghost"
+                            value="1"
+                            onClick={() =>
+                              checkAvailabilityAndBook(
+                                MeetTime.Tomorrow,
+                                event.calId!,
+                              )
+                            }
+                          >
                             Tomorrow
                           </Button>
-                          <Button variant="ghost" value="3">
+                          <Button
+                            variant="ghost"
+                            value="3"
+                            onClick={() =>
+                              checkAvailabilityAndBook(
+                                MeetTime.In3Days,
+                                event.calId!,
+                              )
+                            }
+                          >
                             In 3 days
                           </Button>
-                          <Button variant="ghost" value="7">
+                          <Button
+                            variant="ghost"
+                            value="7"
+                            onClick={() =>
+                              checkAvailabilityAndBook(
+                                MeetTime.InAWeek,
+                                event.calId!,
+                              )
+                            }
+                          >
                             In a week
                           </Button>
 
-                          <Button variant="ghost" value="7">
+                          <Button
+                            variant="ghost"
+                            value="7"
+                            onClick={() =>
+                              checkAvailabilityAndBook(
+                                MeetTime.InAMonth,
+                                event.calId!,
+                              )
+                            }
+                          >
                             In a month
                           </Button>
                         </PopoverContent>
@@ -194,55 +303,5 @@ export default function ContactSheet({
         )}
       </SheetContent>
     </Sheet>
-  );
-}
-
-export function DatePickerWithRange({
-  className,
-}: React.HTMLAttributes<HTMLDivElement>) {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: undefined,
-    to: undefined,
-  });
-
-  return (
-    <div className={cn("grid gap-2", className)}>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            id="date"
-            variant="secondary"
-            className={cn(
-              "w-full justify-start text-left font-normal",
-              !date && "text-muted-foreground",
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
-                </>
-              ) : (
-                format(date.from, "LLL dd, y")
-              )
-            ) : (
-              <span>Check Availability</span>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            initialFocus
-            mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={setDate}
-            numberOfMonths={2}
-          />
-        </PopoverContent>
-      </Popover>
-    </div>
   );
 }

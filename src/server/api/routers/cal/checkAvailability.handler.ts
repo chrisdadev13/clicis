@@ -4,6 +4,10 @@ import type { TRPCContext } from "../../trpc";
 import type { TCheckAvailabilitySchema } from "./checkAvailability.schema";
 
 import axios from "axios";
+import { env } from "@/env";
+import { type UserSchedule } from "@/lib/findMeetingTime";
+
+import findMeetingTime from "@/lib/findMeetingTime";
 
 type CheckAvailabilityOptions = {
   ctx: {
@@ -12,7 +16,80 @@ type CheckAvailabilityOptions = {
   input: TCheckAvailabilitySchema;
 };
 
+const getContactAvailability = async (
+  eventTypeId: number,
+  startTime: string,
+  endTime: string,
+) => {
+  const calApiUrl = `https://api.cal.com/v1/slots?eventTypeId=${eventTypeId}&apiKey=${env.CAL_API_KEY}&startTime=${startTime}&endTime=${endTime}`;
+
+  try {
+    const response = await axios.get<{
+      slots: Record<string, { time: string }[]>;
+    }>(calApiUrl);
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+};
+
+const getUserAvailability = async (
+  calUserId: number,
+  startTime: string,
+  endTime: string,
+) => {
+  const calApiUrl = `https://api.cal.com/v1/availability?userId=${calUserId}&apiKey=${env.CAL_API_KEY}&dateFrom=${startTime}&dateTo=${endTime}`;
+
+  try {
+    const response = await axios.get<UserSchedule>(calApiUrl);
+
+    return response.data;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+};
+
 export const checkAvailabilityHandler = async ({
   ctx,
   input,
-}: CheckAvailabilityOptions) => {};
+}: CheckAvailabilityOptions) => {
+  const { user } = ctx.session;
+
+  const [contactAvailability, userAvailability] = await Promise.allSettled([
+    getContactAvailability(input.eventId, input.startTime, input.endTime),
+    getUserAvailability(user.calId, input.startTime, input.endTime),
+  ]);
+
+  if (contactAvailability.status === "rejected") {
+    throw new TRPCError({
+      code: "TIMEOUT",
+      message: "Failed to get contact availability",
+    });
+  }
+
+  if (userAvailability.status === "rejected") {
+    throw new TRPCError({
+      code: "TIMEOUT",
+      message: "Failed to get user availability",
+    });
+  }
+
+  const meetingTime = findMeetingTime(
+    contactAvailability.value!.slots,
+    userAvailability.value!,
+  );
+
+  if (!meetingTime) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "No available meeting times 🫤",
+    });
+  }
+
+  return meetingTime;
+};
+
+export default checkAvailabilityHandler;

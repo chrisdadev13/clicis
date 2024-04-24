@@ -1,24 +1,28 @@
-interface TimeSlot {
+export interface TimeSlot {
   time: string;
 }
 
-interface BusyTime {
+export interface BusyTime {
   start: string;
   end: string;
 }
 
-interface UserSchedule {
+export interface UserSchedule {
   busy: BusyTime[];
   workingHours: { days: number[]; startTime: number; endTime: number }[];
   timeZone: string;
 }
 
-type Schedule = Record<string, TimeSlot[]>;
+export type Schedule = Record<string, TimeSlot[]>;
 
 export default function findMeetingTime(
   contactSchedule: Schedule,
   userSchedule: UserSchedule,
-): string | null {
+): {
+  contactDate: string;
+  contactDateTime: string;
+  meetingDateTime: string;
+} | null {
   const workingDays = userSchedule.workingHours.map((wh) => wh.days).flat();
   const userTimeZone = userSchedule.timeZone || "UTC";
 
@@ -65,7 +69,13 @@ export default function findMeetingTime(
           minute: "numeric",
         });
 
-        return meetingDateTime;
+        if (!contactDate || !meetingDateTime) return null;
+
+        return {
+          contactDate,
+          contactDateTime: contactDateTime.toISOString().toString(),
+          meetingDateTime,
+        };
       }
     }
   }
