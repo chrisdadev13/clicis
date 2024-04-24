@@ -48,7 +48,6 @@ model User {
   contacts      Contacts[]
   sessions      Session[]
   checkins      CheckIns[]
-
 }
 
 model VerificationToken {
@@ -90,6 +89,7 @@ model EventTypes {
   calId     Int?     @default(0)
   title     String
   slug      String
+  length    Int?     @default(0)
   contactId String
   contact   Contacts @relation(fields: [contactId], references: [id])
 }
