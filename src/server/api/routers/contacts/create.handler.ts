@@ -30,17 +30,25 @@ interface NotFoundResponse {
 const eventTypeExists = async (
   username: string,
   eventTypeSlug: string,
-  apiKey: string,
-): Promise<SuccessResponse | NotFoundResponse | undefined> => {
+): Promise<SuccessResponse[] | undefined> => {
   //const currentDate = new Date().toString();
   //const apiUrl = `https://api.cal.com/v1/slots?apiKey=${apiKey}&startTime=${currentDate}&endTime=${currentDate}&eventTypeSlug=${eventTypeSlug}&usernameList=[${username}]`;
 
   const apiUrl = `https://cal.com/api/trpc/public/event,event?batch=1&input={"0":{"json":{"username":"${username}","eventSlug":"${eventTypeSlug}","isTeamEvent":null,"org":"i","fromRedirectOfNonOrgLink":true},"meta":{"values":{"isTeamEvent":["undefined"]}}},"1":{"json":{"username":"${username}","eventSlug":"${eventTypeSlug}","isTeamEvent":false,"org":"i"}}}`;
 
   try {
-    const response = await axios.get<SuccessResponse | NotFoundResponse>(
-      apiUrl,
-    );
+    const response = await axios.get<SuccessResponse[]>(apiUrl);
+
+    if (!response) return undefined;
+
+    if (!response.data) return undefined;
+
+    if (!response.data[0]) return undefined;
+
+    if (!response.data[0].result.data.json) return undefined;
+
+    if (response.data[0].result.data.json === null) return undefined;
+
     return response.data;
   } catch (error) {
     console.error(error);
@@ -86,11 +94,7 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
     });
   }
 
-  const eventExists = await eventTypeExists(
-    username,
-    eventTypeSlug,
-    env.CAL_API_KEY,
-  );
+  const eventExists = await eventTypeExists(username, eventTypeSlug);
 
   if (!eventExists) {
     throw new TRPCError({
@@ -99,12 +103,7 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
     });
   }
 
-  if ((eventExists as NotFoundResponse).message) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "The event type doesn't exist on cal.com",
-    });
-  }
+  console.log(eventExists[0]?.result.data.json);
 
   const contactAlreadyExists = await db.user.findFirst({
     where: {
