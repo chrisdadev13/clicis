@@ -2,7 +2,6 @@ import { db } from "@/server/db";
 import { TRPCError } from "@trpc/server";
 import type { TRPCContext } from "../../trpc";
 import type { TCheckAvailabilitySchema } from "./checkAvailability.schema";
-
 import axios from "axios";
 import { env } from "@/env";
 import { type UserSchedule } from "@/lib/findMeetingTime";
@@ -52,6 +51,11 @@ const getUserAvailability = async (
   }
 };
 
+function addMinutes(date: Date, minutes: number) {
+  date.setMinutes(date.getMinutes() + minutes);
+  return date.toISOString();
+}
+
 export const checkAvailabilityHandler = async ({
   ctx,
   input,
@@ -69,7 +73,6 @@ export const checkAvailabilityHandler = async ({
       message: "Failed to get contact availability",
     });
   }
-
   if (userAvailability.status === "rejected") {
     throw new TRPCError({
       code: "TIMEOUT",
@@ -88,6 +91,31 @@ export const checkAvailabilityHandler = async ({
       message: "No available meeting times 🫤",
     });
   }
+
+  const event = await db.eventTypes.findFirst({
+    where: {
+      calId: input.eventId,
+    },
+  });
+
+  if (!event) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Event not found",
+    });
+  }
+
+  await db.checkIns.create({
+    data: {
+      status: "PENDING",
+      title: event.title,
+      userId: user.id,
+      contactId: event.contactId,
+      timeZone: user.timeZone,
+      startDate: meetingTime.meetingDateTime,
+      endDate: addMinutes(new Date(meetingTime.meetingDateTime), event.length!),
+    },
+  });
 
   return meetingTime;
 };

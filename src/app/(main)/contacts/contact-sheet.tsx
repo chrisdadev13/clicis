@@ -23,6 +23,7 @@ import Link from "next/link";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MagnifyingGlassIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/navigation";
 
 enum MeetTime {
   Today,
@@ -43,10 +44,16 @@ export default function ContactSheet({
     checkInFrequency: string;
   };
 }) {
+  const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(false);
   const [isOpenPopover, setIsOpenPopover] = React.useState(false);
   const [showEventTypes, setShowEventTypes] = React.useState(false);
-  const { mutate, isPending } = api.cal.checkAvailabilityAndSave.useMutation();
+  const { mutate, isPending } = api.cal.checkAvailabilityAndSave.useMutation({
+    onSuccess: () => {
+      router.push("/check-ins");
+      router.refresh();
+    },
+  });
 
   const { data } = api.contacts.getEvents.useQuery({
     contactId: contact.id,
@@ -182,8 +189,8 @@ export default function ContactSheet({
                       className="flex w-full flex-col items-center justify-between"
                     >
                       <Popover
+                        onOpenChange={(v) => setIsOpenPopover(v)}
                         open={isOpenPopover}
-                        onOpenChange={setIsOpenPopover}
                       >
                         <PopoverTrigger asChild>
                           <Button

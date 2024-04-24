@@ -42,7 +42,7 @@ interface SuccessResponseNew {
         id: number;
         title: string;
         slug: string;
-        length: string;
+        length: number;
       },
     ];
   };
@@ -102,12 +102,12 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
       message: "Invalid URL format for cal.com",
     });
 
-  if (!eventTypeSlug) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "Invalid URL format for cal.com you missed the event type",
-    });
-  }
+  // if (!eventTypeSlug) {
+  //   throw new TRPCError({
+  //     code: "BAD_REQUEST",
+  //     message: "Invalid URL format for cal.com you missed the event type",
+  //   });
+  // }
 
   const contactCalPage = await eventTypeExists(username);
 
@@ -157,13 +157,37 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
     });
   }
 
+  if (!(contactCalPage as SuccessResponseNew).pageProps.users) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "This user doesn't exist on cal.com or he is not available",
+    });
+  }
+
+  if (!(contactCalPage as SuccessResponseNew).pageProps.eventTypes) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "This user is not available for check-ins",
+    });
+  }
+
+  if (!(contactCalPage as SuccessResponseNew).pageProps.eventTypes.length) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "This user is not available for check-ins",
+    });
+  }
+
   const eventsToCreate = (
     contactCalPage as SuccessResponseNew
-  ).pageProps.eventTypes.map((event) => ({
-    title: event.title,
-    slug: event.slug,
-    length: event.length,
-  }));
+  ).pageProps.eventTypes
+    .slice(0, 3)
+    .map((event) => ({
+      calId: event.id,
+      title: event.title,
+      slug: event.slug,
+      length: event.length,
+    }));
 
   const newContact = await db.contacts.create({
     data: {
@@ -174,9 +198,11 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
       checkInFrequency,
       tag,
       eventType: {
-        createMany: eventsToCreate,
+        createMany: {
+          data: eventsToCreate,
+        },
       },
-      calId: contactCalPage[0].result.data.json.owner.id,
+      calId: 12,
     },
   });
 
