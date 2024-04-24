@@ -4,7 +4,10 @@ import slugify from "@/lib/slugify";
 
 import { CheckInTime } from "@prisma/client";
 
-export const calUrlPattern = /^(?:https?:\/\/)?cal\.com\/([^\/?]+)/;
+// const calUrlPattern = /^(?:https?:\/\/)?cal\.com\/([^\/?]+)/;
+//export const calUrlPattern = /^https:\/\/cal\.com\/([^\/]+)\/([^\/]+)$/;
+// export const calUrlPattern = /^(https?:\/\/)?cal\.com\/([^\/]+)\/([^\/]+)$/;
+export const calUrlPattern = /^(?:https?:\/\/)?cal\.com\/([^\/]+)\/([^\/?]+)$/;
 
 export const CalUrlSchema = z.string().refine(
   (url) => {
@@ -37,6 +40,7 @@ enum Color {
 // cal.com url or cal.com username
 export const ZCreateSchema = z.object({
   identifier: CalUrlSchema.or(CalUsernameSchema),
+  name: z.string().min(1).max(100),
   checkInFrequency: z.nativeEnum(CheckInTime),
   tags: z.array(
     z.object({

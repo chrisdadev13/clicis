@@ -14,7 +14,7 @@ export default function Marketing() {
             Effortless Check-Ins, Meaningful Connections
           </h1>
           <p className="pb-9 text-2xl">
-            Never Miss a Beat with Your People. Check In with Ease!
+            Never Miss a Beat with Your People. Check In with Ease using Your Cal.com Account!
           </p>
           <div className="flex gap-6">
             <Button
@@ -43,9 +43,10 @@ export default function Marketing() {
           />
         </div>
       </section>
+      <section className="flex items-center justify-center w-full"><p className="font-cal font-black text-xl">Perfect if you use and like Cal.com</p></section>
       <section
         id="cta"
-        className="mx-3 rounded-xl border border-white bg-primary p-5 text-center text-gray-300"
+        className="mx-3 mt-20 rounded-xl border border-white bg-primary p-5 text-center text-gray-200"
       >
         <h3 className="font-cal text-5xl font-black">How it works?</h3>
         <h3 className="my-8 font-cal text-xl">
@@ -57,7 +58,7 @@ export default function Marketing() {
         </h3>
         <Button
           variant="secondary"
-          className="mt-5 w-full rounded-xl bg-gray-300 font-cal shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition ease-in-out hover:shadow-[6px_6px_0px_0px_rgba(0,0,0)] md:w-40"
+          className="mt-5 w-full rounded-xl bg-gray-200 font-cal shadow-[4px_4px_0px_0px_rgba(0,0,0)] transition ease-in-out hover:shadow-[6px_6px_0px_0px_rgba(0,0,0)] md:w-40"
           asChild
         >
           <Link href="/login">Start using it now!</Link>

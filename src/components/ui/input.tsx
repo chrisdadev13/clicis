@@ -30,7 +30,10 @@ const InputGroup = React.forwardRef<HTMLDivElement, DivProps>(
   ({ className, children }, ref) => {
     return (
       <div
-        className={cn("relative mt-2 rounded-md shadow-sm", className)}
+        className={cn(
+          "relative mt-2 rounded-md border border-input shadow-sm",
+          className,
+        )}
         ref={ref}
       >
         {children}

@@ -9,15 +9,15 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const signInWithGoogle = async () => {
     setIsLoading(true);
-    await signIn("google", { redirect: true, callbackUrl: "/login" });
+    await signIn("google", { redirect: true, callbackUrl: "/contacts" });
   };
 
   return (
     <div className="flex h-screen w-screen items-center justify-center bg-[#f9fafc]">
       <div className="relative z-20 m-auto flex w-full max-w-[400px] flex-col rounded-xl bg-white shadow-md">
         <div className="flex w-full flex-col  p-12">
-          <h1 className="mb-2 text-left font-cal text-3xl font-extrabold">
-            Welcome to HeyCal
+          <h1 className="mb-2 text-left font-cal text-2xl font-extrabold">
+            Welcome to calcon.app
           </h1>
           <p className="mb-3 ">
             A simple and minimalist tool to help you manage your{" "}

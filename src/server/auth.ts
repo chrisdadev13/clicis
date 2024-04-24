@@ -13,13 +13,21 @@ import { db } from "@/server/db";
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-      username: string;
       id: string;
+      calId: number;
+      timeZone: string;
+      weekStart: string;
+      apiKey: string;
+      username: string;
     } & DefaultSession["user"];
   }
 
   interface User {
+    calId: number;
     username: string;
+    timeZone: string;
+    weekStart: string;
+    apiKey: string;
   }
 }
 

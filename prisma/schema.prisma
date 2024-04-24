@@ -13,12 +13,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? // @db.Text
-  access_token      String? // @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? // @db.Text
+  id_token          String?
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -34,15 +34,21 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  username      String? // Cal.com username
-  email         String?   @unique
+  id            String     @id @default(cuid())
+  email         String?    @unique
   emailVerified DateTime?
   image         String?
+  username      String?
+  name          String?
+  apiKey        String?    @unique
+  calId         Int?       @default(0)
+  timeZone      String?    @default("")
+  weekStart     String?    @default("")
   accounts      Account[]
+  Contacts      Contacts[]
   sessions      Session[]
   Tags          Tags[]
-  Contacts      Contacts[]
+  checkins      CheckIns[]
 }
 
 model VerificationToken {
@@ -51,6 +57,46 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Tags {
+  id        String   @id @default(cuid())
+  contactId String
+  name      String
+  color     Color
+  userId    String
+  contact   Contacts @relation(fields: [contactId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Contacts {
+  id               String      @id @default(cuid())
+  url              String
+  username         String
+  name             String
+  checkInFrequency CheckInTime
+  createdAt        DateTime    @default(now())
+  userId           String
+  active           Boolean     @default(true)
+  user             User        @relation(fields: [userId], references: [id])
+  tags             Tags[]
+  checkins         CheckIns[]
+}
+
+model CheckIns {
+  id        String   @id @default(cuid())
+  contactId String
+  contact   Contacts @relation(fields: [contactId], references: [id])
+  userId    String
+  startDate DateTime
+  endDate   DateTime
+  timeZone  String
+  title     String
+  description String?
+  status    String
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 enum Color {
@@ -67,29 +113,8 @@ enum Color {
   white
 }
 
-model Tags {
-  id        String   @id @default(cuid())
-  contact   Contacts @relation(fields: [contactId], references: [id])
-  contactId String
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
-  name      String
-  color     Color
-}
-
 enum CheckInTime {
   Rarely
   Occasionally
   Often
-}
-
-model Contacts {
-  id               String      @id @default(cuid())
-  user             User        @relation(fields: [userId], references: [id])
-  userId           String
-  url              String? // Cal.com URL cal.com/username
-  username         String // Cal.com username - Required to call the API and check availability
-  checkInFrequency CheckInTime
-  tags             Tags[]
-  createdAt        DateTime    @default(now())
 }
