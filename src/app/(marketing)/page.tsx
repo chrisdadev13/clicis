@@ -9,7 +9,7 @@ export default function Marketing() {
         id="hero"
         className="relative mx-auto flex w-full max-w-7xl flex-col-reverse justify-center gap-8 overflow-hidden px-6 pb-16 pt-0 md:px-[34px] md:pb-28 lg:grid lg:grid-cols-2 lg:px-8 lg:pt-14 xl:!px-36"
       >
-        <div className="z-1 mx-auto mt-10 max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-xl lg:pt-20">
+        <div className="z-1 mx-auto mt-10 max-w-2xl flex-shrink-0 selection:bg-black selection:text-white lg:mx-0 lg:max-w-xl lg:pt-20">
           <h1 className="md:!leading-h1 pb-9 font-cal text-[40px] leading-[100%] md:text-5xl lg:text-[50px] xl:text-6xl">
             Effortless Check-Ins, Meaningful Connections
           </h1>
@@ -44,14 +44,14 @@ export default function Marketing() {
           />
         </div>
       </section>
-      <section className="flex w-full items-center justify-center">
+      <section className="flex w-full items-center justify-center selection:bg-black selection:text-white">
         <p className="font-cal text-xl font-black">
           Perfect if you use and like Cal.com
         </p>
       </section>
       <section
         id="cta"
-        className="mx-3 mt-20 rounded-xl border border-white bg-primary p-5 text-center text-gray-200"
+        className="mx-3 mt-20 rounded-xl border border-white bg-primary p-5 text-center text-gray-200 selection:bg-white selection:text-black"
       >
         <h3 className="font-cal text-5xl font-black">How it works?</h3>
         <h3 className="my-8 font-cal text-xl">

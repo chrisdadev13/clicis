@@ -40,6 +40,7 @@ export const authOptions: NextAuthOptions = {
         username: user.username,
         id: user.id,
         calId: user.calId,
+        timeZone: user.timeZone,
       },
     }),
   },

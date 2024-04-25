@@ -112,8 +112,8 @@ export const checkAvailabilityHandler = async ({
       userId: user.id,
       contactId: event.contactId,
       timeZone: user.timeZone,
-      startDate: meetingTime.meetingDateTime,
-      endDate: addMinutes(new Date(meetingTime.meetingDateTime), event.length!),
+      startDate: meetingTime.contactDateTime,
+      endDate: addMinutes(new Date(meetingTime.contactDateTime), event.length!),
     },
   });
 

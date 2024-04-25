@@ -138,7 +138,7 @@ export function CreateContact() {
                           Cal.com url <FormMessage className="ml-1" />
                         </FormLabel>
                         <Input
-                          placeholder="https://cal.com/rick/get-rick-rolled"
+                          placeholder="https://cal.com/rick"
                           className="col-span-3 mr-2"
                           value={field.value.toLowerCase().trim()}
                           onChange={field.onChange}
@@ -148,9 +148,9 @@ export function CreateContact() {
                           onBlur={field.onBlur}
                         />
                         <FormDescription>
-                          You can also just use the{" "}
-                          <span className="font-cal">Cal.com</span> username
-                          (WIP)
+                          For now you can only add personal{" "}
+                          <span className="font-cal">Cal.com</span> links...
+                          Team accounts support is coming soon!
                         </FormDescription>
                       </FormItem>
                     )}

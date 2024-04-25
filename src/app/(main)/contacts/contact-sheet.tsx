@@ -24,6 +24,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { MagnifyingGlassIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast";
 
 enum MeetTime {
   Today,
@@ -44,14 +45,22 @@ export default function ContactSheet({
     checkInFrequency: string;
   };
 }) {
+  const { toast } = useToast();
   const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(false);
-  const [isOpenPopover, setIsOpenPopover] = React.useState(false);
   const [showEventTypes, setShowEventTypes] = React.useState(false);
   const { mutate, isPending } = api.cal.checkAvailabilityAndSave.useMutation({
     onSuccess: () => {
       router.push("/check-ins");
       router.refresh();
+    },
+    onError: (opts) => {
+      toast({
+        variant: "destructive",
+        title: "This user is not available... for you!! 😢",
+        description: opts.message,
+        duration: 3000,
+      });
     },
   });
 
@@ -107,8 +116,6 @@ export default function ContactSheet({
         eventId,
       });
     }
-
-    setIsOpenPopover(false);
   };
 
   return (
@@ -183,109 +190,37 @@ export default function ContactSheet({
                   for you 🙂
                 </p>
                 <ul className="w-full">
-                  {data?.map((event) => (
-                    <li
-                      key={event.id}
-                      className="flex w-full flex-col items-center justify-between"
-                    >
-                      <Popover
-                        onOpenChange={(v) => setIsOpenPopover(v)}
-                        open={isOpenPopover}
-                      >
-                        <PopoverTrigger asChild>
-                          <Button
-                            disabled={isPending}
-                            variant="outline"
-                            className="w-full "
-                          >
-                            {isPending && (
-                              <ReloadIcon className="mr-2 animate-spin" />
-                            )}
-
-                            {!isPending && (
-                              <CalendarIcon className="mr-2 h-4 w-4" />
-                            )}
-                            {!isPending ? event.title : "Booking 🙂..."}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          align="start"
-                          className="flex w-[22rem] flex-col space-y-2 p-2"
+                  {isPending && (
+                    <div className="flex w-full items-center justify-center">
+                      <ReloadIcon className="h-6 w-6 animate-spin" />
+                    </div>
+                  )}
+                  {!isPending && (
+                    <>
+                      {data?.map((event) => (
+                        <li
+                          key={event.id}
+                          className="flex w-full flex-col items-center justify-between"
                         >
-                          <Button
-                            onClick={() =>
-                              checkAvailabilityAndBook(
-                                MeetTime.Today,
-                                event.calId!,
-                              )
-                            }
-                            variant="ghost"
-                            value="0"
+                          <EventsPopover
+                            calId={event.calId!}
+                            title={event.title}
+                            isPending={isPending}
+                            checkAvailabilityAndBook={checkAvailabilityAndBook}
+                          />
+                          <Link
+                            target="_blank"
+                            href={`https://cal.com/${contact.username}/${event.slug}`}
+                            className="w-full text-left text-xs text-gray-500"
                           >
-                            Today
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            value="1"
-                            onClick={() =>
-                              checkAvailabilityAndBook(
-                                MeetTime.Tomorrow,
-                                event.calId!,
-                              )
-                            }
-                          >
-                            Tomorrow
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            value="3"
-                            onClick={() =>
-                              checkAvailabilityAndBook(
-                                MeetTime.In3Days,
-                                event.calId!,
-                              )
-                            }
-                          >
-                            In 3 days
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            value="7"
-                            onClick={() =>
-                              checkAvailabilityAndBook(
-                                MeetTime.InAWeek,
-                                event.calId!,
-                              )
-                            }
-                          >
-                            In a week
-                          </Button>
-
-                          <Button
-                            variant="ghost"
-                            value="7"
-                            onClick={() =>
-                              checkAvailabilityAndBook(
-                                MeetTime.InAMonth,
-                                event.calId!,
-                              )
-                            }
-                          >
-                            In a month
-                          </Button>
-                        </PopoverContent>
-                      </Popover>
-                      <Link
-                        target="_blank"
-                        href={`https://cal.com/${contact.username}/${event.slug}`}
-                        className="w-full text-left text-xs text-gray-500"
-                      >
-                        <small>
-                          cal.com/{contact.username}/{event.slug}
-                        </small>
-                      </Link>
-                    </li>
-                  ))}
+                            <small>
+                              cal.com/{contact.username}/{event.slug}
+                            </small>
+                          </Link>
+                        </li>
+                      ))}
+                    </>
+                  )}
                 </ul>
               </div>
             </div>
@@ -312,3 +247,71 @@ export default function ContactSheet({
     </Sheet>
   );
 }
+
+const EventsPopover = ({
+  isPending,
+  checkAvailabilityAndBook,
+  calId,
+  title,
+}: {
+  isPending: boolean;
+  checkAvailabilityAndBook: (arg0: MeetTime, arg1: number) => void;
+  calId: number;
+  title: string;
+}) => {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  return (
+    <Popover modal={true} onOpenChange={setIsOpen} open={isOpen}>
+      <PopoverTrigger asChild>
+        <Button disabled={isPending} variant="outline" className="w-full ">
+          {isPending && <ReloadIcon className="mr-2 animate-spin" />}
+
+          {!isPending && <CalendarIcon className="mr-2 h-4 w-4" />}
+          {!isPending ? title : "Booking 🙂..."}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="start"
+        className="flex w-[22rem] flex-col space-y-2 p-2"
+      >
+        <Button
+          onClick={() => checkAvailabilityAndBook(MeetTime.Today, calId)}
+          variant="ghost"
+          value="0"
+        >
+          Today
+        </Button>
+        <Button
+          variant="ghost"
+          value="1"
+          onClick={() => checkAvailabilityAndBook(MeetTime.Tomorrow, calId)}
+        >
+          Tomorrow
+        </Button>
+        <Button
+          variant="ghost"
+          value="3"
+          onClick={() => checkAvailabilityAndBook(MeetTime.In3Days, calId)}
+        >
+          In 3 days
+        </Button>
+        <Button
+          variant="ghost"
+          value="7"
+          onClick={() => checkAvailabilityAndBook(MeetTime.InAWeek, calId)}
+        >
+          In a week
+        </Button>
+
+        <Button
+          variant="ghost"
+          value="7"
+          onClick={() => checkAvailabilityAndBook(MeetTime.InAMonth, calId)}
+        >
+          In a month
+        </Button>
+      </PopoverContent>
+    </Popover>
+  );
+};

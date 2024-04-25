@@ -39,6 +39,11 @@ export const deleteHandler = async ({ ctx, input }: DeleteOptions) => {
         id,
       },
     }),
+    db.checkIns.deleteMany({
+      where: {
+        contactId: id,
+      },
+    }),
   ]);
 
   return { success: true };
