@@ -1,5 +1,6 @@
 import { getServerAuthSession } from "@/server/auth";
 import { redirect } from "next/navigation";
+import { api } from "@/trpc/server";
 import GettingStartedForm from "./form";
 
 export default async function GettingStarted() {
@@ -9,9 +10,17 @@ export default async function GettingStarted() {
     redirect("/login");
   }
 
-  if (session.user.username) {
+  const validApiKey = await api.cal.validateApiKey({
+    apiKey: session.user.apiKey,
+  });
+
+  if (validApiKey) {
     redirect("/contacts");
   }
+
+  // if (session.user.username) {
+  //   redirect("/contacts");
+  // }
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center">

@@ -44,9 +44,18 @@ export const setupHandler = async ({ ctx, input }: CreateOptions) => {
   });
 
   if (userExists) {
-    throw new TRPCError({
-      code: "CONFLICT",
-      message: "User already exists",
+    return await db.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        calId: calUser.id,
+        name: calUser.name,
+        username: calUser.username,
+        weekStart: calUser.weekStart,
+        timeZone: calUser.timeZone,
+        apiKey: calApiKey,
+      },
     });
   }
 

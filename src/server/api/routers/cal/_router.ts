@@ -2,6 +2,7 @@ import { protectedProcedure } from "../../procedures/protectedProcedure";
 import { importHandler, router } from "../../trpc";
 import { ZCheckAvailabilitySchema } from "./checkAvailability.schema";
 import { ZDeleteSchema } from "./deleteCheckIn.schema";
+import { ZValidateApiKeySchema } from "./validateApiKey.schema";
 
 const NAMESPACE = "cal";
 const namespaced = (s: string) => `${NAMESPACE}.${s}`;
@@ -25,4 +26,13 @@ export const calRouter = router({
     );
     return handler(opts);
   }),
+  validateApiKey: protectedProcedure
+    .input(ZValidateApiKeySchema)
+    .mutation(async (opts) => {
+      const handler = await importHandler(
+        namespaced("validateApiKey"),
+        () => import("./validateApiKey.handler"),
+      );
+      return handler(opts);
+    }),
 });
