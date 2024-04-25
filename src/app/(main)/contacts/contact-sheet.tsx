@@ -164,8 +164,7 @@ export default function ContactSheet({
         </SheetHeader>
         <Separator className="my-3" />
         <SheetDescription>
-          👋 Hey! Meet your buddy <strong>{contact.username}</strong>. He&apos;s
-          a{" "}
+          👋 Hey! Meet your buddy <strong>{contact.name}</strong>. He&apos;s a{" "}
           {contact.tag === "Friends"
             ? "friend"
             : contact.tag === "Family"
