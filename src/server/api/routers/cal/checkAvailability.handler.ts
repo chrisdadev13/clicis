@@ -60,6 +60,7 @@ interface CreateBookingOptions {
     name: string;
     email: string;
     location: string;
+    notes: string;
   };
 
   metadata: object; // or specific metadata type if known
@@ -214,6 +215,7 @@ export const checkAvailabilityHandler = async ({
       name: user.name!,
       email: user.email!,
       location: "Online",
+      notes: "Meet up with your people - Thanks to Clic",
     },
     metadata: {
       clicIs: "true",
@@ -221,7 +223,7 @@ export const checkAvailabilityHandler = async ({
     language: "en",
     timeZone: user.timeZone,
     title: event.title,
-    description: "Meet up with your contact",
+    description: "Meet up with your contact - Thanks to Clic",
     status: "PENDING",
     smsReminderNumber: null,
   });

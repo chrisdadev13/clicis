@@ -55,7 +55,7 @@ export default async function CheckIns() {
   }
 
   return (
-    <div className="mx-auto flex max-w-4xl flex-col items-center justify-center">
+    <div className="mx-auto mb-10 flex max-w-4xl flex-col items-center justify-center">
       <div className="flex w-full items-center justify-between">
         <h1 className="w-full text-left font-cal text-4xl">Recent Check-ins</h1>
       </div>
