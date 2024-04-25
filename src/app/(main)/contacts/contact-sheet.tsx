@@ -74,9 +74,13 @@ export default function ContactSheet({
     meetTime: MeetTime,
     eventId: number,
   ) => {
-    const startDate = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000));
+    const startDate = new Date(
+      new Date().getTime() - new Date().getTimezoneOffset() * 60000,
+    );
     startDate.setHours(0, 0, 0, 0);
-    const endDate = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000));
+    const endDate = new Date(
+      new Date().getTime() - new Date().getTimezoneOffset() * 60000,
+    );
     endDate.setHours(23, 59, 59, 999);
 
     if (meetTime === MeetTime.Today) {
@@ -129,7 +133,7 @@ export default function ContactSheet({
       </SheetTrigger>
       <SheetContent
         side="left"
-        className="m-5 h-[95%] w-[600px] rounded-lg bg-gray-50"
+        className="m-5 h-[95%] w-[90%] rounded-lg bg-gray-50 sm:w-[600px]"
       >
         <SheetHeader>
           <div className="flex items-center">

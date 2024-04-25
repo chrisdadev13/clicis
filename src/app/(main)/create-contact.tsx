@@ -94,7 +94,7 @@ export function CreateContact() {
           New Contact
         </Button>
       </SheetTrigger>
-      <SheetContent className="m-5 h-[95%] w-[600px] rounded-lg bg-gray-50">
+      <SheetContent className="m-5 h-[95%] w-[90%] rounded-lg bg-gray-50 sm:w-[600px]">
         <SheetHeader>
           <SheetTitle>Add a new contact</SheetTitle>
           <SheetDescription>
@@ -128,7 +128,7 @@ export function CreateContact() {
                     )}
                   />
                 </div>
-                <div className="flex items-center">
+                <div className="flex flex-col items-center sm:flex-row">
                   <FormField
                     control={form.control}
                     name="identifier"
@@ -137,7 +137,6 @@ export function CreateContact() {
                         <FormLabel className="flex items-center text-left font-cal">
                           Cal.com url <FormMessage className="ml-1" />
                         </FormLabel>
-
                         <FormDescription className="text-xs">
                           You can only add personal{" "}
                           <span className="font-cal">Cal.com</span> links. No
@@ -160,7 +159,7 @@ export function CreateContact() {
                     control={form.control}
                     name="checkInFrequency"
                     render={({ field }) => (
-                      <FormItem className="ml-2 mt-12">
+                      <FormItem className="ml-2 mt-3 w-full sm:mt-12 sm:w-32">
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
