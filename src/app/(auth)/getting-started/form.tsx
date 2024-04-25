@@ -35,6 +35,7 @@ export default function GettingStartedForm() {
   const { mutate, isPending } = api.users.setup.useMutation({
     onSuccess: () => {
       router.push("/contacts");
+      router.refresh();
     },
     onError: (opts) => {
       console.log(opts);
