@@ -110,6 +110,7 @@ export const checkAvailabilityHandler = async ({
       status: "PENDING",
       title: event.title,
       userId: user.id,
+      slug: event.slug,
       contactId: event.contactId,
       timeZone: user.timeZone,
       startDate: meetingTime.contactDateTime,

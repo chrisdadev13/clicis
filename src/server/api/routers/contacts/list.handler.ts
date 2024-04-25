@@ -21,6 +21,7 @@ export const listHandler = async ({ ctx }: ListOptions) => {
       checkInFrequency: true,
       active: true,
       tag: true,
+      calId: true,
     },
     orderBy: {
       checkInFrequency: "desc",

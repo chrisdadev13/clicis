@@ -148,9 +148,9 @@ export function CreateContact() {
                           onBlur={field.onBlur}
                         />
                         <FormDescription>
-                          For now you can only add personal{" "}
-                          <span className="font-cal">Cal.com</span> links...
-                          Team accounts support is coming soon!
+                          You can only add personal{" "}
+                          <span className="font-cal">Cal.com</span> links... No
+                          teams 😡 yet
                         </FormDescription>
                       </FormItem>
                     )}

@@ -10,11 +10,11 @@ type GetEventsOptions = {
 };
 
 export const getEventsHandler = async ({ input }: GetEventsOptions) => {
-  const { contactId } = input;
+  const { contactId, contactCalId } = input;
 
   const events = await db.eventTypes.findMany({
     where: {
-      contactId: contactId,
+      calContactId: contactCalId,
     },
     select: {
       id: true,

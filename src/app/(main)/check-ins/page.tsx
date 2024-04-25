@@ -8,6 +8,8 @@ import Link from "next/link";
 import { db } from "@/server/db";
 import { DateTime } from "luxon";
 import { Separator } from "@/components/ui/separator";
+import { formatDateForApi } from "@/lib/formatDate";
+import DeleteModal from "./delete-modal";
 
 export default async function CheckIns() {
   const session = await getServerAuthSession();
@@ -78,6 +80,15 @@ export default async function CheckIns() {
                   <div className="flex items-center">
                     <p className="mr-2 font-cal">{checkIn.contact.username}</p>
                     <Badge variant="secondary">{checkIn.contact.tag}</Badge>
+                    <Link
+                      className="text-xs text-gray-500"
+                      target="_blank"
+                      href={`https://cal.com/${checkIn.contact.username}/${checkIn.slug}?${formatDateForApi(checkIn.startDate)}`}
+                    >
+                      <small>
+                        cal.com/{checkIn.contact.username}/{checkIn.slug}
+                      </small>
+                    </Link>
                   </div>
 
                   <small>
@@ -107,7 +118,20 @@ export default async function CheckIns() {
                 </div>
               </div>
               <div className="flex items-center">
-                <Button size="sm">Book in Cal.com</Button>
+                <Button size="sm" asChild>
+                  <Link
+                    className="text-xs text-gray-500"
+                    target="_blank"
+                    href={`https://cal.com/${checkIn.contact.username}/${checkIn.slug}?${formatDateForApi(checkIn.startDate)}`}
+                  >
+                    Book in Cal.com
+                  </Link>
+                </Button>
+                <DeleteModal
+                  id={checkIn.id}
+                  username={checkIn.contact.username}
+                  tag={checkIn.contact.tag}
+                />
               </div>
             </div>
           </li>

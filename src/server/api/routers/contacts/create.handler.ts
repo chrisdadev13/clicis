@@ -13,20 +13,20 @@ type CreateOptions = {
   input: TCreateSchema;
 };
 
-interface SuccessResponse {
-  result: {
-    data: {
-      json: {
-        id: number;
-        title: string;
-        slug: string;
-        owner: {
-          id: number;
-        };
-      } | null;
-    };
-  };
-}
+// interface SuccessResponse {
+//   result: {
+//     data: {
+//       json: {
+//         id: number;
+//         title: string;
+//         slug: string;
+//         owner: {
+//           id: number;
+//         };
+//       } | null;
+//     };
+//   };
+// }
 
 interface SuccessResponseNew {
   pageProps: {
@@ -35,6 +35,9 @@ interface SuccessResponseNew {
         name: string;
         username: string;
         bio: string;
+        profile: {
+          upId: string;
+        };
       },
     ];
     eventTypes: [
@@ -94,7 +97,7 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
     });
   }
 
-  const { username, eventTypeSlug } = extractUsername(identifier);
+  const { username, _eventTypeSlug } = extractUsername(identifier);
 
   if (!username)
     throw new TRPCError({
@@ -178,12 +181,37 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
     });
   }
 
+  const contactId = (
+    contactCalPage as SuccessResponseNew
+  ).pageProps.users[0].profile.upId.split("-")[1];
+
+  const contactAlreadyExistsSoNoNewEvents = await db.contacts.findFirst({
+    where: {
+      username,
+    },
+  });
+
+  if (contactAlreadyExistsSoNoNewEvents) {
+    return await db.contacts.create({
+      data: {
+        userId: user.id,
+        url: `cal.com/${username}`,
+        name,
+        username,
+        checkInFrequency,
+        tag,
+        calId: parseInt(contactId!),
+      },
+    });
+  }
+
   const eventsToCreate = (
     contactCalPage as SuccessResponseNew
   ).pageProps.eventTypes
     .slice(0, 3)
     .map((event) => ({
       calId: event.id,
+      calContactId: parseInt(contactId!),
       title: event.title,
       slug: event.slug,
       length: event.length,
@@ -202,7 +230,7 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
           data: eventsToCreate,
         },
       },
-      calId: 12,
+      calId: parseInt(contactId!),
     },
   });
 

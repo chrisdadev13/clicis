@@ -43,6 +43,7 @@ export default function ContactSheet({
     name: string;
     tag: string;
     checkInFrequency: string;
+    calId: number;
   };
 }) {
   const { toast } = useToast();
@@ -66,6 +67,7 @@ export default function ContactSheet({
 
   const { data } = api.contacts.getEvents.useQuery({
     contactId: contact.id,
+    contactCalId: contact.calId,
   });
 
   const checkAvailabilityAndBook = async (

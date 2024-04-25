@@ -45,9 +45,9 @@ model User {
   timeZone      String?    @default("")
   weekStart     String?    @default("")
   accounts      Account[]
+  checkins      CheckIns[]
   contacts      Contacts[]
   sessions      Session[]
-  checkins      CheckIns[]
 }
 
 model VerificationToken {
@@ -58,46 +58,37 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-//model Tags {
-//  id        String   @id @default(cuid())
-//  contactId String
-//  name      String
-//  color     Color
-//  userId    String
-//  contact   Contacts @relation(fields: [contactId], references: [id])
-//  user      User     @relation(fields: [userId], references: [id])
-//}
-
 model Contacts {
   id               String       @id @default(cuid())
-  calId            Int?         @default(0)
   url              String
   username         String
   name             String
   checkInFrequency CheckInTime
   createdAt        DateTime     @default(now())
   userId           String
-  tag              String
   active           Boolean      @default(true)
-  user             User         @relation(fields: [userId], references: [id])
+  tag              String
+  calId            Int?         @default(0)
   checkins         CheckIns[]
+  user             User         @relation(fields: [userId], references: [id])
   eventType        EventTypes[]
 }
 
 model EventTypes {
-  id        String   @id @default(cuid())
-  calId     Int?     @default(0)
-  title     String
-  slug      String
-  length    Int?     @default(0)
-  contactId String
-  contact   Contacts @relation(fields: [contactId], references: [id])
+  id           String   @id @default(cuid())
+  calId        Int?     @default(0)
+  title        String
+  slug         String
+  contactId    String
+  length       Int?     @default(0)
+  calContactId Int?     @default(0)
+  contact      Contacts @relation(fields: [contactId], references: [id])
 }
 
 model CheckIns {
   id          String   @id @default(cuid())
   contactId   String
-  contact     Contacts @relation(fields: [contactId], references: [id])
+  slug        String
   userId      String
   startDate   DateTime
   endDate     DateTime
@@ -106,8 +97,8 @@ model CheckIns {
   description String?
   status      String
   createdAt   DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id])
+  contact     Contacts @relation(fields: [contactId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 enum Color {
