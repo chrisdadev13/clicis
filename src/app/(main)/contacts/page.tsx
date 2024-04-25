@@ -88,10 +88,13 @@ export default async function Contacts() {
                 </div>
               </div>
               <div className="flex items-center">
-                <FrequencySelect
-                  contactId={contact.id}
-                  checkInFrequency={contact.checkInFrequency}
-                />
+                <div className="hidden sm:flex">
+                  <FrequencySelect
+                    contactId={contact.id}
+                    checkInFrequency={contact.checkInFrequency}
+                  />
+                </div>
+
                 <ContactSheet contact={contact} />
                 <UpdateContact
                   id={contact.id}
