@@ -137,6 +137,12 @@ export function CreateContact() {
                         <FormLabel className="flex items-center text-left font-cal">
                           Cal.com url <FormMessage className="ml-1" />
                         </FormLabel>
+
+                        <FormDescription className="text-xs">
+                          You can only add personal{" "}
+                          <span className="font-cal">Cal.com</span> links. No
+                          teams 😡 yet
+                        </FormDescription>
                         <Input
                           placeholder="https://cal.com/rick"
                           className="col-span-3 mr-2"
@@ -147,11 +153,6 @@ export function CreateContact() {
                           disabled={field.disabled}
                           onBlur={field.onBlur}
                         />
-                        <FormDescription>
-                          You can only add personal{" "}
-                          <span className="font-cal">Cal.com</span> links... No
-                          teams 😡 yet
-                        </FormDescription>
                       </FormItem>
                     )}
                   />
@@ -159,7 +160,7 @@ export function CreateContact() {
                     control={form.control}
                     name="checkInFrequency"
                     render={({ field }) => (
-                      <FormItem className="-mt-2 ml-2">
+                      <FormItem className="ml-2 mt-12">
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
