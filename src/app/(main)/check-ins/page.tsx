@@ -1,4 +1,4 @@
-import { CalendarIcon } from "@radix-ui/react-icons";
+import { CalendarIcon, PlusIcon } from "@radix-ui/react-icons";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { getServerAuthSession } from "@/server/auth";
@@ -60,11 +60,11 @@ export default async function CheckIns() {
         <h1 className="w-full text-left font-cal text-4xl">Recent Check-ins</h1>
       </div>
       <Separator className="my-3" />
-      <ul className="w-full">
+      <ul className="grid w-full grid-cols-2 gap-2">
         {checkIns.map((checkIn) => (
           <li
             key={checkIn.id}
-            className="mb-1 w-full cursor-pointer rounded-lg border border-primary bg-white hover:bg-gray-100"
+            className="mx-2 mb-1 w-full cursor-pointer rounded-lg border border-primary bg-white hover:bg-gray-100"
           >
             <div className="group flex w-full max-w-full items-center justify-between overflow-hidden px-4 py-4 sm:px-6">
               <div className="flex flex-1 items-center">
@@ -91,51 +91,62 @@ export default async function CheckIns() {
                     </Link>
                   </div>
 
-                  <small>
-                    {DateTime.fromISO(
-                      checkIn.startDate.toISOString(),
-                    ).toLocaleString({
-                      weekday: "short",
-                      month: "long",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                    })}
+                  <div className="w-40">
+                    <small className="text-xs text-gray-500">
+                      {DateTime.fromISO(
+                        checkIn.startDate.toISOString(),
+                      ).toLocaleString({
+                        weekday: "short",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
 
-                    {" - "}
-                    {DateTime.fromISO(
-                      checkIn.endDate.toISOString(),
-                    ).toLocaleString({
-                      weekday: "short",
-                      month: "long",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                      hour12: true,
-                    })}
-                  </small>
+                      {" - "}
+                      {DateTime.fromISO(
+                        checkIn.endDate.toISOString(),
+                      ).toLocaleString({
+                        weekday: "short",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: true,
+                      })}
+                    </small>
+                  </div>
                 </div>
               </div>
               <div className="flex items-center">
-                <Button size="sm" asChild>
+                <Button size="sm" className="text-xs" asChild>
                   <Link
                     className="text-xs text-gray-500"
                     target="_blank"
                     href={`https://cal.com/${checkIn.contact.username}/${checkIn.slug}?${formatDateForApi(checkIn.startDate)}`}
                   >
-                    Book in Cal.com
+                    Cal.com
                   </Link>
                 </Button>
-                <DeleteModal
-                  id={checkIn.id}
-                  username={checkIn.contact.username}
-                  tag={checkIn.contact.tag}
-                />
+                {/* <DeleteModal */}
+                {/*   id={checkIn.id} */}
+                {/*   username={checkIn.contact.username} */}
+                {/*   tag={checkIn.contact.tag} */}
+                {/* /> */}
               </div>
             </div>
           </li>
         ))}
+        <Link
+          href={"/contacts"}
+          className="mx-2 mb-1 flex h-10 w-full cursor-pointer items-center justify-center rounded-lg border border-primary bg-transparent hover:bg-white"
+        >
+          <li className="flex items-center justify-center font-cal text-xl">
+            <PlusIcon />
+            Check in
+          </li>
+        </Link>
       </ul>
     </div>
   );
