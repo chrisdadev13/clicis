@@ -27,7 +27,7 @@ export default async function Contacts() {
 
   if (contacts.length === 0) {
     return (
-      <div className="flex w-screen flex-col items-center justify-center">
+      <div className="flex flex-col items-center justify-center">
         <div className="flex flex-col items-center justify-center">
           <Image src="/empty.png" alt="Empty state" width={500} height={500} />
           <h1 className="my-2 max-w-md text-center font-cal text-2xl">
