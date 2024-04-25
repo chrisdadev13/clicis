@@ -60,7 +60,7 @@ export default async function CheckIns() {
         <h1 className="w-full text-left font-cal text-4xl">Recent Check-ins</h1>
       </div>
       <Separator className="my-3" />
-      <ul className="grid w-full grid-cols-2 gap-2">
+      <ul className="mr-4 grid w-full grid-cols-1 gap-2 sm:mr-0 sm:grid-cols-2">
         {checkIns.map((checkIn) => (
           <li
             key={checkIn.id}
