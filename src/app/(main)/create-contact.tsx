@@ -143,7 +143,7 @@ export function CreateContact() {
                           teams 😡 yet
                         </FormDescription>
                         <Input
-                          placeholder="https://cal.com/rick"
+                          placeholder="https://cal.com/rick/get-rick-rolled"
                           className="col-span-3 mr-2"
                           value={field.value.toLowerCase().trim()}
                           onChange={field.onChange}

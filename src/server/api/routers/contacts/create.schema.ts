@@ -4,10 +4,10 @@ import slugify from "@/lib/slugify";
 
 import { CheckInTime } from "@prisma/client";
 
-export const calUrlPattern = /^(?:https?:\/\/)?cal\.com\/([^\/?]+)/;
+//export const calUrlPattern = /^(?:https?:\/\/)?cal\.com\/([^\/?]+)/;
 //export const calUrlPattern = /^https:\/\/cal\.com\/([^\/]+)\/([^\/]+)$/;
 //export const calUrlPattern = /^(https?:\/\/)?cal\.com\/([^\/]+)\/([^\/]+)$/;
-//export const calUrlPattern = /^(?:https?:\/\/)?cal\.com\/([^\/]+)\/([^\/?]+)$/;
+export const calUrlPattern = /^(?:https?:\/\/)?cal\.com\/([^\/]+)\/([^\/?]+)$/;
 
 export const CalUrlSchema = z.string().refine(
   (url) => {
