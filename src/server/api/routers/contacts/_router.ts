@@ -3,6 +3,7 @@ import { importHandler, router } from "../../trpc";
 import { ZCreateSchema } from "./create.schema";
 import { ZUpdateSchema } from "./update.schema";
 import { ZDeleteSchema } from "./delete.schema";
+import { ZGetEventsSchema } from "./getEvents.schema";
 
 const NAMESPACE = "contact";
 const namespaced = (s: string) => `${NAMESPACE}.${s}`;
@@ -33,6 +34,13 @@ export const contactsRouter = router({
     const handler = await importHandler(
       namespaced("delete"),
       () => import("./delete.handler"),
+    );
+    return handler(opts);
+  }),
+  getEvents: protectedProcedure.input(ZGetEventsSchema).query(async (opts) => {
+    const handler = await importHandler(
+      namespaced("getEvents"),
+      () => import("./getEvents.handler"),
     );
     return handler(opts);
   }),

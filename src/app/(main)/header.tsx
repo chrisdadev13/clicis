@@ -8,7 +8,7 @@ export default function Header() {
       <div className="flex w-full items-center justify-between px-4">
         <div className="flex items-center">
           <h1 className="-mr-1 font-cal text-2xl">
-            calcon.app <span className="font-sans">/</span>
+            clic <span className="font-sans">/</span>
           </h1>
           <Navigation />
         </div>

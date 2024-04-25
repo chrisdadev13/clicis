@@ -69,9 +69,7 @@ export default async function Contacts() {
                 <div className="ml-2">
                   <div className="flex items-center">
                     <p className="mr-2 font-cal">{contact.username}</p>
-                    <Badge variant="secondary">
-                      {contact.tags.at(-1)!.name}
-                    </Badge>
+                    <Badge variant="secondary">{contact.tag}</Badge>
                   </div>
                   <Link
                     href={`https://cal.com/${contact.username}`}
@@ -90,13 +88,13 @@ export default async function Contacts() {
                 <UpdateContact
                   id={contact.id}
                   identifier={`cal.com/${contact.username}`}
-                  tag={contact.tags.at(-1)!.name}
+                  tag={contact.tag}
                   name={contact.name}
                 />
                 <DeleteModal
                   id={contact.id}
                   username={contact.username}
-                  tag={contact.tags.at(-1)!.name}
+                  tag={contact.tag}
                 />
               </div>
             </div>

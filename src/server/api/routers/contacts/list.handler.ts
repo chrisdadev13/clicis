@@ -20,12 +20,7 @@ export const listHandler = async ({ ctx }: ListOptions) => {
       name: true,
       checkInFrequency: true,
       active: true,
-      tags: {
-        select: {
-          name: true,
-          color: true,
-        },
-      },
+      tag: true,
     },
     orderBy: {
       checkInFrequency: "desc",

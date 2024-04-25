@@ -46,19 +46,6 @@ const formSchema = z.object({
   tags: z.string(),
 });
 
-enum Color {
-  Red = "red",
-  Blue = "blue",
-  Green = "green",
-  Yellow = "yellow",
-  Purple = "purple",
-  Orange = "orange",
-  Pink = "pink",
-  Brown = "brown",
-  Black = "black",
-  White = "white",
-}
-
 export function CreateContact() {
   const router = useRouter();
   const [isOpen, setIsOpen] = React.useState(false);
@@ -94,7 +81,7 @@ export function CreateContact() {
     mutate({
       identifier: values.identifier,
       name: values.name,
-      tags: [{ name: values.tags, color: Color.Blue }],
+      tag: values.tags,
       checkInFrequency: values.checkInFrequency,
     });
   }
@@ -161,9 +148,9 @@ export function CreateContact() {
                           onBlur={field.onBlur}
                         />
                         <FormDescription>
-                          You can also just use the{" "}
-                          <span className="font-cal">Cal.com</span> username
-                          (WIP)
+                          For now you can only add personal{" "}
+                          <span className="font-cal">Cal.com</span> links...
+                          Team accounts support is coming soon!
                         </FormDescription>
                       </FormItem>
                     )}

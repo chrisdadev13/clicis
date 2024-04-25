@@ -15,9 +15,25 @@ type UpdateOptions = {
 
 export const updateHandler = async ({ ctx, input }: UpdateOptions) => {
   const { user } = ctx.session;
-  const { id, identifier, name, checkInFrequency, tags } = input;
+  const { id, identifier, name, checkInFrequency, tag } = input;
 
   let data: Prisma.ContactsUpdateInput = {};
+
+  const contact = await db.contacts.findFirst({
+    where: {
+      id,
+      userId: user.id,
+    },
+    select: {
+      eventType: true,
+    },
+  });
+  if (!contact) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Contact not found",
+    });
+  }
 
   if (identifier) {
     const { username } = extractUsername(identifier);
@@ -40,14 +56,8 @@ export const updateHandler = async ({ ctx, input }: UpdateOptions) => {
     data = { ...data, username, url: identifier };
   }
 
-  if (tags?.length) {
-    const tagsWithUserId = tags.map((tag) => ({
-      userId: user.id,
-      name: tag.name,
-      color: tag.color,
-    }));
-
-    data = { ...data, tags: { create: tagsWithUserId } };
+  if (tag) {
+    data = { ...data, tag };
   }
 
   if (name) {

@@ -30,7 +30,6 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
 });
 
 export type TRPCContext = Awaited<ReturnType<typeof createTRPCContext>>;
-export type TRPCInnerContext = ReturnType<typeof createInnerTRPCContext>;
 
 export const router = t.router;
 export const procedure = t.procedure;
