@@ -14,7 +14,7 @@ const inter = Inter({
 
 export const metadata = {
   title: "Clic App",
-  description: "Create List and Interact with your Cal.com contacts",
+  description: "Create, List and Interact with your Cal.com contacts",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
