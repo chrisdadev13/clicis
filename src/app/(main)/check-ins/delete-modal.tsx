@@ -57,7 +57,7 @@ export default function DeleteModal({
             <Avatar className="border border-black bg-[#ebebeb] ">
               <AvatarFallback>{username[0]}</AvatarFallback>
               <AvatarImage
-                src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${username}`}
+                src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${username}`}
                 className=" grayscale"
               />
             </Avatar>

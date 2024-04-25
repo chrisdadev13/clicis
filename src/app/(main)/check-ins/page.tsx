@@ -70,7 +70,7 @@ export default async function CheckIns() {
               <div className="flex flex-1 items-center">
                 <Avatar className="border border-black bg-[#ebebeb]">
                   <AvatarImage
-                    src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${checkIn.contact.username}`}
+                    src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${checkIn.contact.username}`}
                     className="grayscale"
                   />
 

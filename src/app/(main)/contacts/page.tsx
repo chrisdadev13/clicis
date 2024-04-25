@@ -60,7 +60,7 @@ export default async function Contacts() {
               <div className="flex flex-1 items-center">
                 <Avatar className="border border-black bg-[#ebebeb]">
                   <AvatarImage
-                    src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${contact.username}`}
+                    src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${contact.username}`}
                     className="grayscale"
                   />
 

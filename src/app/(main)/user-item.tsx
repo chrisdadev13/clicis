@@ -29,8 +29,7 @@ export default async function UserItem() {
         <Avatar className="h-10 w-10 border border-black bg-[#ebebeb]">
           <AvatarFallback>{username[0]}</AvatarFallback>
           <AvatarImage
-            src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${username}`}
-            className="grayscale"
+            src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${username}`}
           />
         </Avatar>
       </DropdownMenuTrigger>

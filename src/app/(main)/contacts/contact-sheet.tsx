@@ -135,7 +135,7 @@ export default function ContactSheet({
           <div className="flex items-center">
             <Avatar className="mr-2 border border-black bg-[#ebebeb]">
               <AvatarImage
-                src={`https://api.dicebear.com/8.x/open-peeps/svg?seed=${contact.username}`}
+                src={`https://api.dicebear.com/8.x/lorelei/svg?seed=${contact.username}`}
                 className="grayscale"
               />
 
