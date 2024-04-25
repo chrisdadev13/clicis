@@ -97,7 +97,7 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
     });
   }
 
-  const { username, _eventTypeSlug } = extractUsername(identifier);
+  const { username } = extractUsername(identifier);
 
   if (!username)
     throw new TRPCError({
