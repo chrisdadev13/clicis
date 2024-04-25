@@ -72,7 +72,7 @@ export default function GettingStartedForm() {
                 <Input
                   type="text"
                   defaultValue=""
-                  placeholder="cal_live_138u23482u3482uh2fh238r2"
+                  placeholder="cal_live_c8d988bc7ed850dad92cccb440cc6ffa"
                   {...field}
                 />
               </FormControl>
