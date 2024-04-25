@@ -74,9 +74,9 @@ export default function ContactSheet({
     meetTime: MeetTime,
     eventId: number,
   ) => {
-    const startDate = new Date();
+    const startDate = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000));
     startDate.setHours(0, 0, 0, 0);
-    const endDate = new Date();
+    const endDate = new Date(new Date().getTime() - (new Date().getTimezoneOffset() * 60000));
     endDate.setHours(23, 59, 59, 999);
 
     if (meetTime === MeetTime.Today) {

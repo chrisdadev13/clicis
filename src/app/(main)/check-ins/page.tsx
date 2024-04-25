@@ -122,18 +122,19 @@ export default async function CheckIns() {
               <div className="flex items-center">
                 <Button size="sm" className="text-xs" asChild>
                   <Link
-                    className="text-xs text-gray-500"
+                    className="text-xs font-cal text-gray-500"
                     target="_blank"
                     href={`https://cal.com/${checkIn.contact.username}/${checkIn.slug}?${formatDateForApi(checkIn.startDate)}`}
                   >
-                    Cal.com
+                    Cal
                   </Link>
+
                 </Button>
-                {/* <DeleteModal */}
-                {/*   id={checkIn.id} */}
-                {/*   username={checkIn.contact.username} */}
-                {/*   tag={checkIn.contact.tag} */}
-                {/* /> */}
+                <DeleteModal
+                  id={checkIn.id}
+                  username={checkIn.contact.username}
+                  tag={checkIn.contact.tag}
+                />
               </div>
             </div>
           </li>
