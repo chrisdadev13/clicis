@@ -76,6 +76,7 @@ export default function DeleteModal({
           </div>
         </DialogDescription>
         <DialogFooter>
+          <Button variant="ghost">Go Back</Button>
           <Button
             variant="destructive"
             onClick={() => {
@@ -89,7 +90,6 @@ export default function DeleteModal({
             ) : null}
             Delete
           </Button>
-          <Button variant="ghost">Go Back</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -30,6 +30,9 @@ export default async function CheckIns() {
       user: true,
       contact: true,
     },
+    orderBy: {
+      "startDate": "asc"
+    }
   });
 
   if (checkIns.length === 0) {
