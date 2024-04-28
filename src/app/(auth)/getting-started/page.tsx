@@ -10,16 +10,6 @@ export default async function GettingStarted() {
     redirect("/login");
   }
 
-  if (session.user.apiKey) {
-    const validApiKey = await api.cal.validateApiKey({
-      apiKey: session.user.apiKey,
-    });
-
-    if (validApiKey) {
-      redirect("/contacts");
-    }
-  }
-
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center">
       <h1 className="mb-5 font-cal text-4xl font-black">Getting Started</h1>
