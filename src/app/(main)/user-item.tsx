@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getServerAuthSession } from "@/server/auth";
 import { ExitIcon, GearIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
@@ -22,6 +23,10 @@ export default async function UserItem() {
   }
 
   const { username, email } = session.user;
+
+  if (!username) {
+    return <Skeleton className="h-10 w-10 rounded-full" />;
+  }
 
   return (
     <DropdownMenu>
