@@ -23,16 +23,6 @@ export default async function Contacts() {
     redirect("/getting-started");
   }
 
-  if (session.user.apiKey) {
-    const validApiKey = await api.cal.validateApiKey({
-      apiKey: session.user.apiKey,
-    });
-
-    if (!validApiKey) {
-      redirect("/getting-started");
-    }
-  }
-
   const contacts = await api.contacts.list();
 
   if (contacts.length === 0) {
