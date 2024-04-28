@@ -91,7 +91,7 @@ export default function ContactSheet({
       });
     } else if (meetTime === MeetTime.Tomorrow) {
       startDate.setDate(startDate.getDate() + 1);
-      endDate.setDate(startDate.getDate() + 2);
+      endDate.setDate(endDate.getDate() + 2);
       mutate({
         startTime: startDate.toISOString(),
         endTime: endDate.toISOString(),
@@ -99,7 +99,7 @@ export default function ContactSheet({
       });
     } else if (meetTime === MeetTime.In3Days) {
       startDate.setDate(startDate.getDate() + 3);
-      endDate.setDate(startDate.getDate() + 6);
+      endDate.setDate(endDate.getDate() + 6);
       mutate({
         startTime: startDate.toISOString(),
         endTime: endDate.toISOString(),
@@ -107,7 +107,7 @@ export default function ContactSheet({
       });
     } else if (meetTime === MeetTime.InAWeek) {
       startDate.setDate(startDate.getDate() + 7);
-      endDate.setDate(startDate.getDate() + 14);
+      endDate.setDate(endDate.getDate() + 14);
       mutate({
         startTime: startDate.toISOString(),
         endTime: endDate.toISOString(),
@@ -115,7 +115,7 @@ export default function ContactSheet({
       });
     } else if (meetTime === MeetTime.InAMonth) {
       startDate.setDate(startDate.getDate() + 30);
-      endDate.setDate(startDate.getDate() + 60);
+      endDate.setDate(endDate.getDate() + 60);
       mutate({
         startTime: startDate.toISOString(),
         endTime: endDate.toISOString(),
