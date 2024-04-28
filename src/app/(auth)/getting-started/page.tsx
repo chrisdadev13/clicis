@@ -10,17 +10,15 @@ export default async function GettingStarted() {
     redirect("/login");
   }
 
-  const validApiKey = await api.cal.validateApiKey({
-    apiKey: session.user.apiKey,
-  });
+  if (session.user.apiKey) {
+    const validApiKey = await api.cal.validateApiKey({
+      apiKey: session.user.apiKey,
+    });
 
-  if (validApiKey) {
-    redirect("/contacts");
+    if (validApiKey) {
+      redirect("/contacts");
+    }
   }
-
-  // if (session.user.username) {
-  //   redirect("/contacts");
-  // }
 
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center">
