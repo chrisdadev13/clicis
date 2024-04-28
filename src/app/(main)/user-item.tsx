@@ -11,15 +11,14 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getServerAuthSession } from "@/server/auth";
-import { ExitIcon, GearIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
+import { ExitIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 export default async function UserItem() {
   const session = await getServerAuthSession();
 
   if (!session) {
-    redirect("/login");
+    return <Skeleton className="h-10 w-10 rounded-full" />;
   }
 
   const { username, email } = session.user;
