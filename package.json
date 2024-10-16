@@ -37,7 +37,7 @@
     "@trpc/next": "next",
     "@trpc/react-query": "next",
     "@trpc/server": "next",
-    "axios": "^1.6.8",
+    "axios": "^1.7.4",
     "cal-sans": "^1.0.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
